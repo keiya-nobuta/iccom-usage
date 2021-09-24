@@ -99,8 +99,98 @@ sender using ch.1 and receiver using ch.11 (loopback):
 
 ## Sender
 
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <linux/netlink.h>
+#include <sys/socket.h>
+#include <iccom.h>
+
+int main(int argc, char *argv[])
+{
+	int ch = 1;
+	int sock_fd;
+	char *message;
+
+	message = (argc < 2) ? "Hello world" : argv[1];
+
+	sock_fd = iccom_open_socket(ch);
+	if (sock_fd < 0) {
+		perror("iccom_open_socket failed");
+		return errno;
+	}
+
+	if (iccom_send_data(sock_fd, message, strlen(message)) < 0) {
+		perror("Sending message failed");
+		goto failure;
+	}
+
+	printf("send\n");
+
+failure:
+	iccom_close_socket(sock_fd);
+
+	return 0;
+}
+```
 
 ## Receiver
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+#include <linux/netlink.h>
+#include <sys/socket.h>
+#include <iccom.h>
+
+int main(int argc, char *argv[])
+{
+	int sock_fd;
+	char message[1024] = {0};
+	int offset_out = 0;
+	int ch = 11;
+	int ret;
+	int from_ch = 0;
+	int to_ch = 9;
+	int range_shift = 10;
+
+	ret = iccom_loopback_enable(from_ch, to_ch, range_shift);
+	if (ret) {
+		perror("iccom_loopback_enable failed");
+		return ret;
+	}
+
+	sock_fd = iccom_open_socket(ch + 10);
+	if (sock_fd < 0) {
+		perror("iccom_open_socket failed");
+		return errno;
+	}
+
+	if (iccom_receive_data(sock_fd, message,
+				sizeof(message),
+				&offset_out) < 0) {
+		perror("Recieving message failed");
+		goto failure;
+	}
+
+	if (offset_out >= 1023) {
+		fprintf(stderr, "offset_out is out of range\n");
+		goto failure;
+	}
+	printf("Recieved: offset_out=%d, message=%s\n", offset_out, message + offset_out);
+
+failure:
+	iccom_close_socket(sock_fd);
+
+	return 0;
+}
+```
 
 Noted that `offset_out`, 
 ## restriction
