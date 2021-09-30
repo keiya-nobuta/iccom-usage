@@ -1,12 +1,13 @@
 # About
 
+This document contains usage of iccom via libiccom.
 
 # References
 
 - https://github.com/Bosch-SW/linux-iccom
 - https://github.com/Bosch-SW/libiccom
 
-# iccom-usage
+# iccom modules enablement
 
 ## Module loading
 
@@ -14,13 +15,15 @@
 # modprobe iccom_socket_if
 ```
 
-Check loaded modules:
+Check loaded modules, for example:
 
 ```
 # lsmod
+...
 iccom_socket_if        16384 0
 iccom_transport_helper 16384 1 iccom_socket_if
 iccom                  32768 1 iccom_socket_if
+...
 ```
 
 ## Loopback configuration
