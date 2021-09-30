@@ -97,8 +97,7 @@ if (ret) {
 
 more detail, see https://github.com/Bosch-SW/libiccom/blob/main/readme.md
 
-Tfollowing is an implementation example of 
-sender using ch.1 and receiver using ch.11 (loopback):
+An implementation example of sender using ch.1 and receiver using ch.11 (loopback) is shown the following:
 
 ## Sender
 
