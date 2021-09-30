@@ -193,7 +193,12 @@ failure:
 ```
 
 Noted that `offset_out`, 
-## restriction
 
-Max message size
-#define ICCOM_SOCKET_MAX_MESSAGE_SIZE_BYTES 4096
+`offset_out` contains an offset value that indicates the position of the payload in the received message.
+The netlink message header must be added to the message exchanged via NETLINK, and iccom_send_data() does this automatically.
+To read the payload with iccom_receive_data(), `offset_out` must be added to `message` pointer.
+
+## Note
+
+- Max message size (payload size) is 4096 bytes, it's defined ICCOM_SOCKET_MAX_MESSAGE_SIZE_BYTES.
+- NETLINK_ICCOM -- The netlink family ID, is originaly definition were 22. But this number is reserved for SMC monitoring in current Linux, so we changed to 23. 
